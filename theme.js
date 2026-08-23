@@ -22,6 +22,9 @@
   html[data-theme="dark"] .news-section .section-heading p{color:#bfd0c5!important}
   html[data-theme="dark"] :is(.official-comments,.comment,.comment-main,.comment-list,.comment-form,.reply-box) :is(h1,h2,h3,h4,h5,p,small,span,label,strong,b,li){color:#d9e7df!important}
   html[data-theme="dark"] :is(.official-comments,.comment) input,html[data-theme="dark"] :is(.official-comments,.comment) textarea{background:#111f19!important;color:#edf4ef!important;border-color:#496158!important}
+  /* Pastilles de qualités dans les fiches de races : fond sombre + texte très contrasté. */
+  html[data-theme="dark"] .quality{background:#294b3d!important;color:#f4f8f4!important;border:1px solid #5d806f!important}
+  html[data-theme="dark"] .qualities .quality{color:#f4f8f4!important}
   html[data-theme="dark"] .book{background:#17251f!important}
   html[data-theme="dark"] .member-theme{border-color:#365047!important}
   html[data-theme="dark"] :is(.result,.names span,.answers button,.ideal-card .why,.budget-lines span,.badge){background:#1b3027!important;color:#e6eee9!important;border-color:#456158!important}
