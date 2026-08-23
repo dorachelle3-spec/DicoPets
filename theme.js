@@ -11,11 +11,11 @@
   const style=document.createElement('style');style.textContent=`
   html[data-theme="dark"] body{background:#0e1814!important;color:#e6eee9!important}
   html[data-theme="dark"]{--cream:#0e1814!important;--paper:#17251f!important;--ink:#e6eee9!important;--muted:#a9bbb1!important;--line:#365047!important;--soft:#21342b!important;--white:#17251f!important;--sky:#162822!important;--rose:#2a2027!important}
-  html[data-theme="dark"] :is(.card,.tool,.tool-card,.panel,.detail,.fact,.recommendation,.credit,.promise-grid article,.modal-box,.account-box,.member-box,.sheet,.calendar-panel,.book,.entry-pages,.library,.question,.term,.job,.disc,.world-card,.news-card,.event-card,.member-notification,.signup-reminder-card,.entry,.notice,.guide-card,.mission,.auth-box,.calendar-entry,details){background-color:#17251f!important;color:#e6eee9!important;border-color:#365047!important}
-  html[data-theme="dark"] :is(.card,.tool,.tool-card,.panel,.detail,.fact,.recommendation,.credit,.promise-grid article,.modal-box,.account-box,.member-box,.sheet,.calendar-panel,.book,.entry-pages,.library,.question,.term,.job,.disc,.world-card,.news-card,.event-card,.member-notification,.signup-reminder-card,.entry,.notice,.guide-card,.mission,.auth-box,.calendar-entry,details) :is(h1,h2,h3,h4,h5,p,small,span,label,li,summary,strong,b){color:#d9e7df!important}
+  html[data-theme="dark"] :is(.card,.tool,.tool-card,.panel,.detail,.fact,.recommendation,.credit,.promise-grid article,.modal-box,.account-box,.member-box,.sheet,.calendar-panel,.book,.entry-pages,.library,.question,.term,.job,.disc,.world-card,.news-card,.event-card,.member-notification,.signup-reminder-card,.entry,.notice,.guide-card,.mission,.auth-box,.calendar-entry,details,.official-comments,.comment){background-color:#17251f!important;color:#e6eee9!important;border-color:#365047!important}
+  html[data-theme="dark"] :is(.card,.tool,.tool-card,.panel,.detail,.fact,.recommendation,.credit,.promise-grid article,.modal-box,.account-box,.member-box,.sheet,.calendar-panel,.book,.entry-pages,.library,.question,.term,.job,.disc,.world-card,.news-card,.event-card,.member-notification,.signup-reminder-card,.entry,.notice,.guide-card,.mission,.auth-box,.calendar-entry,details,.official-comments,.comment) :is(h1,h2,h3,h4,h5,p,small,span,label,li,summary,strong,b){color:#d9e7df!important}
   html[data-theme="dark"] :is(input,textarea,select,.search){background:#111f19!important;color:#edf4ef!important;border-color:#496158!important}
   html[data-theme="dark"] :is(.controls,.nav){background:#13231ddd!important;border-color:#365047!important}
-  html[data-theme="dark"] :is(.section,.tools,.breeds,.main,.promise,.news){background-color:#0e1814!important;color:#e6eee9!important}
+  html[data-theme="dark"] :is(.section,.tools,.breeds,.main,.promise,.news,.news-section){background-color:#0e1814!important;color:#e6eee9!important}
   html[data-theme="dark"] :is(h1,h2,h3,h4,strong,b){color:#f1f6f3}
   html[data-theme="dark"] .book{background:#17251f!important}
   html[data-theme="dark"] .member-theme{border-color:#365047!important}
@@ -26,6 +26,7 @@
   html[data-theme="dark"] .ideal-master :is(span,p){color:#edf4ef!important}
   html[data-theme="dark"] :is(.top,.topbar,.hero,.dog-journal,header) :is(h1,h2,h3,h4,h5,p,small,span,label,strong,b,a){color:#eef5f0!important}
   html[data-theme="dark"] :is(.top,.topbar,.hero,.dog-journal,header) .eyebrow{color:#e8c985!important}
+  html[data-theme="dark"] .hero .credits-hero-button{background:#fffdf8!important;color:#173b30!important}
   html[data-theme="dark"] a:not(.button):not(.btn):not(.google):not(.journal-button){color:#e8c985}
   .member-theme{border-top:1px solid #dde7dd;margin-top:20px;padding-top:16px}.member-theme label{display:block;font-weight:800;margin-bottom:6px}.member-theme select{width:100%;padding:11px;border:1px solid #cbd8ce;border-radius:8px;background:#fff;color:#234238;font:inherit}.member-theme p{font-size:12px;color:#60746a}
   `;document.head.appendChild(style);
