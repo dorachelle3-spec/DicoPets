@@ -43,6 +43,8 @@
       </div>
     </section>
 
+    <section class="dicopets-search" aria-labelledby="dicopetsSearchTitle"><div class="wrap"><div class="dicopets-search-box"><div><p class="eyebrow" id="dicopetsSearchTitle" data-fr="Trouver rapidement" data-en="Find quickly">Trouver rapidement</p><h2 data-fr="Rechercher dans DicoPets" data-en="Search DicoPets">Rechercher dans DicoPets</h2><p data-fr="Une race, une rubrique ou le pseudo d’un membre." data-en="A breed, a topic or a member username.">Une race, une rubrique ou le pseudo d’un membre.</p></div><div class="dicopets-search-control"><label class="sr-only" for="dicopetsSearchInput">Rechercher</label><input id="dicopetsSearchInput" type="search" autocomplete="off" data-placeholder-fr="Ex. Maine Coon, soins, DicoPets…" data-placeholder-en="E.g. Maine Coon, care, DicoPets…" placeholder="Ex. Maine Coon, soins, DicoPets…"><div id="dicopetsSearchResults" class="dicopets-search-results" aria-live="polite"></div></div></div></div></section>
+
     <section class="intro" id="univers">
       <div class="wrap">
         <div class="section-heading"><h2 data-fr="Choisis ton univers" data-en="Choose your world">Choisis ton univers</h2><p data-fr="Les univers DicoCheval, DicoChien et DicoChat sont maintenant ouverts." data-en="DicoCheval, DicoChien and DicoChat are now open.">Les univers DicoCheval, DicoChien et DicoChat sont maintenant ouverts.</p></div>
@@ -81,7 +83,9 @@
   <script src="dicopets-news.js?v=20260809-home"></script>
   <script src="dicopets-comments.js?v=20260823-darkfix"></script>
   <button id="topVisitorAccess" type="button" hidden aria-hidden="true"></button>
+  <script src="favorites.js?v=20260823-favorites"></script>
   <script src="member-profile.js?v=20260823-responsive"></script>
+  <script src="dicopets-search.js?v=20260823-search"></script>
   <script>document.getElementById('openMemberFromAccount')?.addEventListener('click',event=>{event.preventDefault();document.getElementById('accountModal')?.classList.remove('open');document.getElementById('topVisitorAccess')?.click()});</script>
   <script src="signup-reminder.js?v=20260810-popup"></script>
   <script src="pwa.js?v=20260811"></script>
