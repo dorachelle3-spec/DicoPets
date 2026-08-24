@@ -51,6 +51,15 @@ begin
   end if;
 end $$;
 
+-- Une personne peut effacer son propre commentaire ; la propriétaire peut modérer tous les commentaires.
+drop policy if exists "Membre supprime son commentaire ou propriétaire" on public.commentaires;
+create policy "Membre supprime son commentaire ou propriétaire"
+on public.commentaires for delete to authenticated
+using (
+  auteur_id = auth.uid()
+  or auth.uid() = 'f22161e4-7528-4fd2-9860-a18be084b1f6'::uuid
+);
+
 delete from public.profils_publics
 where id <> 'f22161e4-7528-4fd2-9860-a18be084b1f6'::uuid
   and lower(regexp_replace(pseudo, '[^[:alnum:]]', '', 'g')) = 'dicocheval';

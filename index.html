@@ -88,12 +88,12 @@
     (()=>{const select=document.getElementById('language');const saved=localStorage.getItem('dicopetsLanguage')||'fr';select.value=saved;function apply(){const en=select.value==='en';document.documentElement.lang=en?'en':'fr';document.querySelectorAll('[data-fr][data-en]').forEach(el=>el.textContent=el.dataset[en?'en':'fr']);localStorage.setItem('dicopetsLanguage',en?'en':'fr');window.dispatchEvent(new Event('dicopets-language-change'))}select.addEventListener('change',apply);apply()})();
   </script>
   <script src="dicopets-news.js?v=20260809-home"></script>
-  <script src="dicopets-comments.js?v=20260823-darkfix"></script>
+  <script src="dicopets-comments.js?v=20260825-threadfix"></script>
   <script src="mention-suggestions.js?v=20260824"></script>
-  <script src="dicopets-discussions.js?v=20260824"></script>
+  <script src="dicopets-discussions.js?v=20260825-deletefix"></script>
   <button id="topVisitorAccess" type="button" hidden aria-hidden="true"></button>
   <script src="favorites.js?v=20260823-favorites"></script>
-  <script src="member-profile.js?v=20260823-responsive"></script>
+  <script src="member-profile.js?v=20260825-clear"></script>
   <script src="dicopets-search.js?v=20260823-search"></script>
   <script>document.getElementById('openMemberFromAccount')?.addEventListener('click',event=>{event.preventDefault();document.getElementById('accountModal')?.classList.remove('open');document.getElementById('topVisitorAccess')?.click()});</script>
   <script src="signup-reminder.js?v=20260810-popup"></script>
