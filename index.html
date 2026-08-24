@@ -19,7 +19,7 @@
     @media(max-width:620px){.wrap{width:min(100% - 28px,1160px)}.topbar .wrap{padding:12px 0;align-items:flex-start}.brand{font-size:26px}.top-actions{justify-content:flex-end}.top-actions a{display:none}.nav .wrap{justify-content:flex-start;overflow:auto}.hero .wrap{padding-top:76px;padding-bottom:82px}.hero h1{font-size:48px}.world-grid,.news-list{grid-template-columns:1fr}.world-card:first-child{grid-column:auto}.world-card{min-height:390px}.section-heading h2{font-size:39px}.footer-row{align-items:flex-start;flex-direction:column}}
   </style>
   <style>.language,.language option{background:#fff!important;color:#173b30!important}.credits-hero-button{padding:13px 20px!important;font-size:15px!important;border-width:2px!important;box-shadow:0 0 0 0 #e7c47f66,0 8px 18px #0d291f38!important;animation:creditHint 3.2s ease-in-out infinite}@keyframes creditHint{0%,70%,100%{box-shadow:0 0 0 0 #e7c47f55,0 8px 18px #0d291f38}82%{box-shadow:0 0 0 7px #e7c47f00,0 10px 22px #0d291f45}}@media(prefers-reduced-motion:reduce){.credits-hero-button{animation:none}}</style>
-<script src="theme.js?v=20260823-stable"></script></head>
+<script src="theme.js?v=20260824-lightonly"></script></head>
 <body>
   <header class="topbar">
     <div class="wrap">
@@ -67,6 +67,13 @@
       </div>
     </section>
 
+    <section class="community-discussions" id="discussions">
+      <div class="wrap">
+        <div class="section-heading"><h2 data-fr="Discussions DicoPets" data-en="DicoPets discussions">Discussions DicoPets</h2><p data-fr="Deux espaces courts pour échanger avec la communauté. Les messages disparaissent après 24 heures." data-en="Two short-lived spaces to talk with the community. Messages disappear after 24 hours.">Deux espaces courts pour échanger avec la communauté. Les messages disparaissent après 24 heures.</p></div>
+        <div class="discussion-actions"><button class="button" type="button" data-discussion-language="fr">Discussion française</button><button class="button button-ghost" type="button" data-discussion-language="en">English discussion</button></div>
+      </div>
+    </section>
+
     <section class="promise"><div class="wrap"><div class="section-heading"><h2 data-fr="Un seul compte, plusieurs univers" data-en="One account, several worlds">Un seul compte, plusieurs univers</h2><p data-fr="Ton compte actuel DicoCheval devient ton compte DicoPets. Tu gardes le même accès et les mêmes informations." data-en="Your current DicoCheval account becomes your DicoPets account. You keep the same access and information.">Ton compte actuel DicoCheval devient ton compte DicoPets. Tu gardes le même accès et les mêmes informations.</p></div><div class="promise-grid"><article><h3 data-fr="Même connexion" data-en="Same sign-in">Même connexion</h3><p data-fr="Aucun nouveau compte à créer." data-en="No new account to create.">Aucun nouveau compte à créer.</p></article><article><h3 data-fr="Des guides spécialisés" data-en="Specialized guides">Des guides spécialisés</h3><p data-fr="Chaque animal possède son propre univers." data-en="Each animal has its own world.">Chaque animal possède son propre univers.</p></article><article><h3 data-fr="Une actualité commune" data-en="Shared news">Une actualité commune</h3><p data-fr="Toutes les nouveautés sont réunies ici." data-en="All updates are gathered here.">Toutes les nouveautés sont réunies ici.</p></article></div></div></section>
 
   </main>
@@ -82,6 +89,8 @@
   </script>
   <script src="dicopets-news.js?v=20260809-home"></script>
   <script src="dicopets-comments.js?v=20260823-darkfix"></script>
+  <script src="mention-suggestions.js?v=20260824"></script>
+  <script src="dicopets-discussions.js?v=20260824"></script>
   <button id="topVisitorAccess" type="button" hidden aria-hidden="true"></button>
   <script src="favorites.js?v=20260823-favorites"></script>
   <script src="member-profile.js?v=20260823-responsive"></script>

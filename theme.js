@@ -1,32 +1,14 @@
-/* Thème DicoPets : léger, compatible tactile et sans analyse coûteuse du contenu. */
-(()=>{'use strict';
-  const KEY='dicopetsThemePreference',choices=new Set(['auto','system','light','dark']);
-  const media=matchMedia('(prefers-color-scheme: dark)');
-  let preference=choices.has(localStorage.getItem(KEY))?localStorage.getItem(KEY):'auto';
-  const night=()=>{const h=new Date().getHours();return h>=18||h<8};
-  const value=()=>preference==='dark'||(preference==='system'&&media.matches)||(preference==='auto'&&(media.matches||night()))?'dark':'light';
-  function apply(){const mode=value();document.documentElement.dataset.theme=mode;document.documentElement.style.colorScheme=mode;document.querySelector('meta[name="theme-color"]')?.setAttribute('content',mode==='dark'?'#0e1814':'#173b30');document.querySelectorAll('#memberThemePreference').forEach(select=>select.value=preference);window.dispatchEvent(new CustomEvent('dicopets-theme-change',{detail:{theme:mode,preference}}))}
-  function set(next,save=true){preference=choices.has(next)?next:'auto';localStorage.setItem(KEY,preference);apply();if(save&&window.supabase){try{const db=window.supabase.createClient('https://mmxdlnfntpufwwkdvgzc.supabase.co','sb_publishable_Pa-DX3nwNTZktbWK46KDQg_IuIy8TZP');db.auth.getUser().then(({data})=>data.user&&db.auth.updateUser({data:{theme_preference:preference}}))}catch(_){}}}
-  const css=`
-    html[data-theme="dark"]{--cream:#0e1814!important;--paper:#17251f!important;--ink:#edf4ef!important;--muted:#c4d3cb!important;--line:#3e574c!important;--soft:#20362c!important;--white:#17251f!important;--sky:#162822!important;--rose:#252129!important}
-    html[data-theme="dark"] body{background:#0e1814!important;color:#edf4ef!important}
-    html[data-theme="dark"] :is(.card,.tool,.tool-card,.panel,.detail,.fact,.recommendation,.credit,.modal-box,.account-box,.member-box,.sheet,.calendar-panel,.book,.entry-pages,.library,.question,.term,.job,.disc,.world-card,.news-card,.event-card,.member-notification,.signup-reminder-card,.entry,.notice,.guide-card,.auth-box,.calendar-entry,.comment,.official-comments,details){background-color:#17251f!important;color:#edf4ef!important;border-color:#3e574c!important}
-    html[data-theme="dark"] :is(.section,.tools,.breeds,.main,.promise,.news,.news-section,.intro){background-color:#0e1814!important;color:#edf4ef!important}
-    html[data-theme="dark"] :is(.card,.tool,.tool-card,.panel,.detail,.fact,.recommendation,.credit,.modal-box,.account-box,.member-box,.sheet,.calendar-panel,.book,.entry-pages,.library,.question,.term,.job,.disc,.world-card,.news-card,.event-card,.member-notification,.signup-reminder-card,.entry,.notice,.guide-card,.auth-box,.calendar-entry,.comment,.official-comments,.section,.tools,.breeds,.main,.promise,.news,.news-section,.intro) :is(h1,h2,h3,h4,h5,h6,p,small,span,label,li,summary,strong,b){color:#edf4ef!important}
-    html[data-theme="dark"] :is(input,textarea,select,.search){background:#111f19!important;color:#f7fbf8!important;border-color:#5b7568!important}
-    html[data-theme="dark"] :is(.controls,.nav){background:#13231d!important;border-color:#3e574c!important}
-    html[data-theme="dark"] .quality,html[data-theme="dark"] .badge,html[data-theme="dark"] .member-badge{background:#294b3d!important;color:#f7fbf8!important;border-color:#668676!important}
-    html[data-theme="dark"] .budget-total,html[data-theme="dark"] .eyebrow,html[data-theme="dark"] .fact strong,html[data-theme="dark"] .detail strong{color:#f0cc88!important}
-    html[data-theme="dark"] .hero .credits-hero-button{background:#fffdf8!important;color:#173b30!important}
-    html[data-theme="dark"] a:not(.button):not(.btn):not(.google):not(.journal-button){color:#f0cc88}
-    html[data-theme="dark"] :is(.top,.topbar,.hero,header) :is(h1,h2,h3,h4,h5,p,small,span,label,strong,b,a){color:#f5faf6!important}
-    .member-theme{border-top:1px solid #dde7dd;margin-top:20px;padding-top:16px}.member-theme label{display:block;font-weight:800;margin-bottom:6px}.member-theme select{width:100%;padding:11px;border:1px solid #cbd8ce;border-radius:8px;background:#fff;color:#234238;font:inherit}.member-theme p{font-size:12px;color:#60746a}
-  `;
-  document.head.appendChild(Object.assign(document.createElement('style'),{textContent:css}));
-  function translate(){const section=document.querySelector('.member-theme');if(!section)return;const en=document.documentElement.lang.toLowerCase().startsWith('en'),t=en?['Site appearance','Display mode','Automatic — local time and device','Follow my device only','Always light','Always dark','In automatic mode, the site follows local time and your device.']:['Apparence du site','Mode d’affichage','Automatique — heure locale et appareil','Suivre uniquement mon appareil','Toujours clair','Toujours sombre','En automatique, le site suit ton heure locale et ton appareil.'];section.querySelector('h3').textContent=t[0];section.querySelector('label').textContent=t[1];section.querySelectorAll('option').forEach((option,i)=>option.textContent=t[i+2]);section.querySelector('p').textContent=t[6]}
-  function addControl(){const box=document.querySelector('#memberModal .member-box');if(!box||box.querySelector('.member-theme'))return;const section=document.createElement('section');section.className='member-theme';section.innerHTML='<h3>Apparence du site</h3><label for="memberThemePreference">Mode d’affichage</label><select id="memberThemePreference"><option value="auto">Automatique — heure locale et appareil</option><option value="system">Suivre uniquement mon appareil</option><option value="light">Toujours clair</option><option value="dark">Toujours sombre</option></select><p></p>';box.querySelector('.member-actions')?.before(section);section.querySelector('select').value=preference;section.querySelector('select').addEventListener('change',event=>set(event.target.value));translate()}
-  async function loadSaved(){if(!window.supabase)return;try{const db=window.supabase.createClient('https://mmxdlnfntpufwwkdvgzc.supabase.co','sb_publishable_Pa-DX3nwNTZktbWK46KDQg_IuIy8TZP'),{data}=await db.auth.getUser(),saved=data.user?.user_metadata?.theme_preference;if(choices.has(saved)){preference=saved;localStorage.setItem(KEY,saved);apply()}}catch(_){}}
-  apply();media.addEventListener?.('change',apply);setInterval(()=>preference==='auto'&&apply(),60000);
-  document.addEventListener('DOMContentLoaded',()=>{addControl();loadSaved();window.addEventListener('dicopets-language-change',translate)});
-  window.DicoPetsTheme={set,getPreference:()=>preference,getTheme:value};
+/* DicoPets reste volontairement en mode clair pour une lecture fiable sur tous les appareils. */
+(() => {
+  'use strict';
+  try { localStorage.removeItem('dicopetsThemePreference'); } catch (_) {}
+  const apply = () => {
+    document.documentElement.dataset.theme = 'light';
+    document.documentElement.style.colorScheme = 'light';
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#173b30');
+    document.querySelectorAll('.member-theme').forEach(node => node.remove());
+  };
+  apply();
+  document.addEventListener('DOMContentLoaded', apply);
+  window.DicoPetsTheme = { set: apply, getPreference: () => 'light', getTheme: () => 'light' };
 })();
