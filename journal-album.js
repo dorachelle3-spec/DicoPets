@@ -11,8 +11,10 @@
   const host=document.createElement('section');
   host.className='album-panel';
   host.innerHTML='<h2></h2><p class="album-lead"></p><div class="album-form"><label><span></span><input id="albumPhoto" type="file" accept="image/png,image/jpeg,image/webp"></label><label><span></span><input id="albumCaption" maxlength="120"></label><button class="button" type="button" id="albumSave"></button></div><p class="album-status" id="albumStatus"></p><div class="album-grid" id="albumGrid"></div>';
-  const target=document.querySelector('.library')||document.querySelector('.panel:last-child')||document.querySelector('main .wrap');
-  target?.after(host);
+  /* Dans le journal félin, l'album doit sortir de la grille des deux panneaux. */
+  const target=document.querySelector('#privateArea .grid')||document.querySelector('.journal-layout')||document.querySelector('.library')||document.querySelector('main .wrap');
+  if(!target)return;
+  target.after(host);
   document.head.insertAdjacentHTML('beforeend','<style>.album-panel{margin:34px 0;padding:clamp(22px,4vw,38px);border:1px solid #cfddd1;border-radius:22px;background:#edf4ef;color:#19372f}.album-panel h2{margin:0 0 5px;color:#19372f}.album-lead,.album-status{color:#526d60}.album-form{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}.album-form label{display:grid;gap:6px;font-weight:800}.album-form input{min-width:0;padding:11px;border:1px solid #bdc9bf;border-radius:10px;background:#fff;color:#19372f;font:inherit}.album-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:17px;margin-top:24px}.album-item{position:relative;overflow:hidden;border-radius:15px;background:#fffdf8;border:1px solid #cfddd1;box-shadow:0 8px 20px #17352612}.album-item img{display:block;width:100%;height:225px;object-fit:cover;background:#e2ece4}.album-item p{margin:0;padding:12px 14px;color:#19372f;font-size:14px}.album-delete{position:absolute;right:9px;top:9px;border:0;border-radius:50%;width:32px;height:32px;background:#983f43;color:#fff;font-weight:900;cursor:pointer}@media(max-width:650px){.album-form{grid-template-columns:1fr}.album-form .button{justify-self:start}.album-grid{grid-template-columns:1fr}.album-item img{height:min(70vw,320px)}}</style>');
   function read(){try{return JSON.parse(localStorage.getItem(key)||'[]')}catch(_){return[]}}
   function write(items){localStorage.setItem(key,JSON.stringify(items.slice(0,18)))}
