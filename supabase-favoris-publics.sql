@@ -52,6 +52,12 @@ begin
 end $$;
 
 -- Une personne peut effacer son propre commentaire ; la propriétaire peut modérer tous les commentaires.
+drop policy if exists "Membre modifie seulement son commentaire" on public.commentaires;
+create policy "Membre modifie seulement son commentaire"
+on public.commentaires for update to authenticated
+using (auteur_id = auth.uid())
+with check (auteur_id = auth.uid());
+
 drop policy if exists "Membre supprime son commentaire ou propriétaire" on public.commentaires;
 create policy "Membre supprime son commentaire ou propriétaire"
 on public.commentaires for delete to authenticated
