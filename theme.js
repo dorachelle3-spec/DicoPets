@@ -22,6 +22,16 @@ html[data-theme="light"] :is(.button-ghost,.account-actions .secondary,.journal-
 html[data-theme="light"] .official-badge{background:#234238!important;color:#fff!important}
 html[data-theme="light"] .member-favorite small{color:#53695e!important}
 html[data-theme="light"] .member-favorite-remove{background:#fff!important;color:#87433d!important}
+/* Fenêtres de connexion et de publication : elles ne doivent jamais hériter
+   d'un texte blanc prévu pour une bannière sombre. */
+html[data-theme="light"] :is(.modal-box,.owner-box,.account-box,.auth-box,.comment-auth-box){background:#fffdf8!important;color:#18352c!important;border:1px solid #d7dfd5!important;box-shadow:0 24px 70px #071b1555!important}
+html[data-theme="light"] :is(.modal-box,.owner-box,.account-box,.auth-box,.comment-auth-box) :is(h1,h2,h3,h4,p,label,.status,.help,.account-message){color:#18352c!important}
+html[data-theme="light"] :is(.modal-box,.owner-box,.account-box,.auth-box,.comment-auth-box) :is(input,textarea,select){background:#fff!important;color:#18352c!important;border-color:#b9c7bb!important}
+html[data-theme="light"] :is(.modal-box,.owner-box,.account-box,.auth-box,.comment-auth-box) .button:not(.button-ghost):not(.button-danger),html[data-theme="light"] :is(.modal-box,.owner-box,.account-box,.auth-box,.comment-auth-box) .btn:not(.danger){color:#fff!important}
+html[data-theme="light"] :is(.modal-box,.owner-box,.account-box,.auth-box,.comment-auth-box) .button-ghost{color:#173b30!important}
+html[data-theme="light"] :is(.modal-close,.owner-close,.account-close,.comment-auth-close){background:#edf2ec!important;color:#173b30!important;border-radius:10px!important}
+/* Finition moderne légère : profondeur discrète, sans alourdir l'interface. */
+html[data-theme="light"] :is(.modal-box,.owner-box,.account-box,.auth-box,.comment-auth-box){border-radius:22px!important}
 `;document.head.appendChild(style);
     }
   };

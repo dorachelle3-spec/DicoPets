@@ -1,4 +1,4 @@
-const CACHE='dicopets-v20260825-contrast2';
+const CACHE='dicopets-v20260825-modern';
 const CORE=['./','./index.html','./mobile-fixes.css','./icon-dicopets-v2.png','./icon-dicopets-v2.png','./icon-dicopets-v2.png','./favicon.ico'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
