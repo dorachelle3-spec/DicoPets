@@ -42,5 +42,29 @@
   function addMemberControl(){const box=document.querySelector('#memberModal .member-box');if(!box||box.querySelector('.member-theme'))return;const section=document.createElement('section');section.className='member-theme';section.innerHTML='<h3>Apparence du site</h3><label for="memberThemePreference">Mode d’affichage</label><select id="memberThemePreference"><option value="auto">Automatique — heure locale et appareil</option><option value="system">Suivre uniquement mon appareil</option><option value="light">Toujours clair</option><option value="dark">Toujours sombre</option></select><p></p>';const actions=box.querySelector('.member-actions');box.insertBefore(section,actions);section.querySelector('select').value=preference;section.querySelector('select').addEventListener('change',e=>set(e.target.value));translateControl()}
   async function loadAccountPreference(){if(!window.supabase)return;try{const db=window.supabase.createClient('https://mmxdlnfntpufwwkdvgzc.supabase.co','sb_publishable_Pa-DX3nwNTZktbWK46KDQg_IuIy8TZP');const {data}=await db.auth.getUser(),remote=data.user?.user_metadata?.theme_preference;if(valid.has(remote)){preference=remote;localStorage.setItem(KEY,remote);apply()}db.auth.onAuthStateChange((_e,session)=>{const value=session?.user?.user_metadata?.theme_preference;if(valid.has(value)){preference=value;localStorage.setItem(KEY,value);apply()}})}catch(_){}}
   document.addEventListener('DOMContentLoaded',()=>{addMemberControl();new MutationObserver(translateControl).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});window.addEventListener('dicopets-language-change',translateControl);loadAccountPreference()});
+  /* Filet de sécurité : aucune écriture pâle ne doit rester sur un fond pâle.
+     Cela couvre aussi les fiches, fenêtres et contenus créés après le chargement. */
+  const contrastStyle=document.createElement('style');
+  contrastStyle.textContent='html[data-theme="dark"] [data-dicopets-contrast-fix]{color:#173b30!important;text-shadow:none!important}';
+  document.head.appendChild(contrastStyle);
+  const rgb=value=>{
+    const hex=value.match(/^#([0-9a-f]{3,8})$/i);
+    if(hex){let h=hex[1];if(h.length===3||h.length===4)h=[...h].map(x=>x+x).join('');return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16),h.length===8?parseInt(h.slice(6,8),16)/255:1]}
+    const match=value.match(/^rgba?\\(([^)]+)\\)$/i);if(!match)return null;const p=match[1].split(',').map(x=>parseFloat(x));return p.length>=3?[p[0],p[1],p[2],p[3]??1]:null
+  };
+  const luminance=rgbValue=>{const [r,g,b]=rgbValue.map((x,i)=>i<3?(x/=255,x<=.03928?x/12.92:((x+.055)/1.055)**2):x);return .2126*r+.7152*g+.0722*b};
+  const visibleBackground=el=>{for(let node=el;node&&node!==document.documentElement;node=node.parentElement){const colour=rgb(getComputedStyle(node).backgroundColor);if(colour&&colour[3]>.08)return colour}return rgb(getComputedStyle(document.body).backgroundColor)};
+  let contrastTimer=0;
+  function repairContrast(){
+    if(document.documentElement.dataset.theme!=='dark')return;
+    document.querySelectorAll('h1,h2,h3,h4,h5,h6,p,span,small,strong,b,label,li,a,button,summary,input,textarea,option').forEach(el=>{
+      if(!el.textContent.trim()||getComputedStyle(el).display==='none')return;
+      const foreground=rgb(getComputedStyle(el).color),background=visibleBackground(el);if(!foreground||!background)return;
+      const a=luminance(foreground),b=luminance(background),ratio=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+      if(luminance(background)>.48&&ratio<3.2)el.dataset.dicopetsContrastFix='';else delete el.dataset.dicopetsContrastFix;
+    });
+  }
+  function scheduleContrastRepair(){clearTimeout(contrastTimer);contrastTimer=setTimeout(repairContrast,80)}
+  document.addEventListener('DOMContentLoaded',()=>{scheduleContrastRepair();new MutationObserver(scheduleContrastRepair).observe(document.body,{childList:true,subtree:true});window.addEventListener('dicopets-theme-change',scheduleContrastRepair)});
   window.DicoPetsTheme={set,getPreference:()=>preference,getTheme:resolved};
 })();
