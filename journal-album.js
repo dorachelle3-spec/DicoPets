@@ -9,7 +9,7 @@
   const $=id=>document.getElementById(id);
   const esc=value=>String(value||'').replace(/[&<>]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[char]));
   const host=document.createElement('section');
-  host.className='album-panel';
+  host.className='album-panel'; host.id='album';
   host.innerHTML='<h2></h2><p class="album-lead"></p><div class="album-form"><label><span></span><input id="albumPhoto" type="file" accept="image/png,image/jpeg,image/webp"></label><label><span></span><input id="albumCaption" maxlength="120"></label><button class="button" type="button" id="albumSave"></button></div><p class="album-status" id="albumStatus"></p><div class="album-grid" id="albumGrid"></div>';
   /* Dans le journal félin, l'album doit sortir de la grille des deux panneaux. */
   const target=document.querySelector('#privateArea .grid')||document.querySelector('.journal-layout')||document.querySelector('.library')||document.querySelector('main .wrap');
