@@ -5,6 +5,7 @@
   let remoteDb=null;
   const read=()=>{try{return JSON.parse(localStorage.getItem(KEY)||localStorage.getItem(OLD_KEY)||'[]')}catch{return[]}};
   const write=list=>localStorage.setItem(KEY,JSON.stringify(list.slice(-150)));
+  const text=(fr,en)=>document.documentElement.lang.toLowerCase().startsWith('en')?en:fr;
   const isIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
   const isSafari=()=>/^((?!chrome|android|crios|fxios|edgios).)*safari/i.test(navigator.userAgent);
   const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
@@ -25,7 +26,12 @@
     return{saved:!error,reason:error?.message||''};
   }
   async function saveRemoteReminder(item){
-    const client=db();if(!client)return;try{const {data:{user}}=await client.auth.getUser();if(!user)return;await client.from('notification_queue').upsert({user_id:user.id,reminder_id:item.id,notify_at:new Date(Number(item.when)).toISOString(),title:item.title||'Rappel DicoPets',body:item.body||'Un événement approche.',url:item.url||'/DicoPets/index.html',status:'pending',sent_at:null,last_error:null},{onConflict:'user_id,reminder_id'})}catch{}
+    const client=db();if(!client)return{saved:false,reason:'client'};
+    try{
+      const {data:{user}}=await client.auth.getUser();if(!user)return{saved:false,reason:'login'};
+      const {error}=await client.from('notification_queue').upsert({user_id:user.id,reminder_id:item.id,notify_at:new Date(Number(item.when)).toISOString(),title:item.title||'Rappel DicoPets',body:item.body||'Un événement approche.',url:item.url||'/DicoPets/index.html',status:'pending',sent_at:null,last_error:null},{onConflict:'user_id,reminder_id'});
+      return{saved:!error,reason:error?.message||''};
+    }catch(error){return{saved:false,reason:error?.message||'network'}}
   }
   async function removeRemoteReminder(id){const client=db();if(!client)return;try{const {data:{user}}=await client.auth.getUser();if(user)await client.from('notification_queue').delete().eq('user_id',user.id).eq('reminder_id',id)}catch{}}
   function capability(){
@@ -72,11 +78,20 @@
   function arm(item){
     clearTimeout(timers.get(item.id));const delay=Number(item.when)-Date.now();
     if(delay<=0){if(!item.sent&&delay>-86400000)show(item).then(ok=>ok&&markSent(item.id));return}
-    if(delay>MAX_DELAY)return;
+    /* Les minuteurs du navigateur ont une limite. On se réveille à nouveau
+       avant cette limite pour ne jamais oublier un rappel lointain. */
+    if(delay>MAX_DELAY){
+      timers.set(item.id,setTimeout(()=>arm(item),MAX_DELAY));
+      return;
+    }
     timers.set(item.id,setTimeout(async()=>{if(await show(item))markSent(item.id);timers.delete(item.id)},delay));
   }
   function rearm(){read().filter(x=>!x.sent).forEach(arm)}
-  function schedule(item){if(!item?.id||!item?.when||Number(item.when)<=Date.now()+500)return;const list=read().filter(x=>x.id!==item.id);list.push({...item,sent:false});write(list);arm(item);saveRemoteReminder(item)}
+  async function schedule(item,{remote=true}={}){
+    if(!item?.id||!item?.when||Number(item.when)<=Date.now()+500)return{saved:false,reason:'past'};
+    const list=read().filter(x=>x.id!==item.id);list.push({...item,sent:false});write(list);arm(item);
+    return remote?saveRemoteReminder(item):{saved:true,reason:'local'};
+  }
   function remove(id){write(read().filter(x=>x.id!==id));clearTimeout(timers.get(id));timers.delete(id);removeRemoteReminder(id)}
   async function enable(){
     const support=capability();if(!support.ok){installHelp(support.code);return support}
@@ -93,6 +108,11 @@
     return{ok:true,code:'local-only',message:'Notification de test réussie. Le service Supabase doit encore être activé pour les rappels lorsque DicoPets est fermé.'};
   }
   const style=document.createElement('style');style.textContent='.notification-help{position:fixed;z-index:10000;left:50%;bottom:max(18px,env(safe-area-inset-bottom));width:min(520px,calc(100% - 28px));transform:translateX(-50%);padding:20px 44px 20px 20px;border:1px solid #d5c08f;border-radius:16px;background:#fffdf8;color:#173b30;box-shadow:0 18px 55px #102a2255;font:15px/1.5 Arial,sans-serif}.notification-help strong{display:block;font:700 21px Georgia,serif}.notification-help button{position:absolute;right:10px;top:9px;border:0;background:transparent;color:#173b30;font-size:25px}.notification-help ol{margin-bottom:0;padding-left:20px}.notification-ios-notice{margin:10px 0 14px;padding:11px 13px;border:1px solid #d5c08f;border-radius:11px;background:#fff7dc;color:#173b30;font:14px/1.45 Arial,sans-serif}.notification-ios-notice strong{display:block;margin-bottom:2px}.notification-enable-button{display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:48px;margin:4px 0 10px;font-size:15px!important;cursor:pointer}html[data-theme="dark"] .notification-help,html[data-theme="dark"] .notification-ios-notice{background:#17251f;color:#edf4ef;border-color:#6f603e}';document.head.appendChild(style);
-  function initialise(){ensureReminderButton();bindReminderButton();addIOSInstallNotice()}rearm();addEventListener('focus',rearm);document.addEventListener('visibilitychange',()=>document.visibilityState==='visible'&&rearm());document.readyState==='loading'?document.addEventListener('DOMContentLoaded',initialise,{once:true}):initialise();
+  function initialise(){ensureReminderButton();bindReminderButton();addIOSInstallNotice()}
+  rearm();addEventListener('focus',rearm);document.addEventListener('visibilitychange',()=>document.visibilityState==='visible'&&rearm());
+  document.readyState==='loading'?document.addEventListener('DOMContentLoaded',initialise,{once:true}):initialise();
+  /* Certains calendriers finissent de se construire après ce script : le bouton
+     est alors ajouté dès que leur zone apparaît, sans demander un rechargement. */
+  new MutationObserver(initialise).observe(document.documentElement,{childList:true,subtree:true});
   window.DicoPetsNotifications={enable,schedule,remove,capability,showTest:()=>show({id:'manual-'+Date.now(),title:'Test DicoPets',body:'Les notifications fonctionnent.',url:location.href})};
 })();

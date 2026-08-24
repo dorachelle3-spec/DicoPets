@@ -10,13 +10,15 @@
   const noteData=event=>{const raw=String(event.notes||''),match=raw.match(/^\[\[dpr:(0|15|30|45|60|120|1440)\]\]/),language=(raw.match(/\[\[dpl:(fr|en)\]\]/)||[, 'fr'])[1];return{minutes:match?Number(match[1]):60,language,notes:raw.replace(/^\[\[dpr:(0|15|30|45|60|120|1440)\]\]/,'').replace(/^\[\[dpl:(fr|en)\]\]/,'')}};
   const eventMoment=event=>new Date(`${event.event_date}T${String(event.event_time||'').slice(0,5)||'09:00'}:00`);
   const reminderIds=id=>ALL_REMINDERS.map(minutes=>`dog-${id}-${minutes}`);
-  function scheduleEvent(event){
+  async function scheduleEvent(event,{remote=true}={}){
     if(!window.DicoPetsNotifications||!event?.id||!event.event_time)return;
     const at=eventMoment(event),{minutes,language}=noteData(event),english=language==='en',clock=at.toLocaleTimeString(english?'en-US':'fr-CA',{hour:'2-digit',minute:'2-digit'});
-    const send=(offset,title,body)=>window.DicoPetsNotifications.schedule({id:`dog-${event.id}-${offset}`,when:at.getTime()-offset*60000,title,body,url:'journal-chien.html#calendrier'});
+    const send=(offset,title,body)=>window.DicoPetsNotifications.schedule({id:`dog-${event.id}-${offset}`,when:at.getTime()-offset*60000,title,body,url:'journal-chien.html#calendrier'},{remote});
     const before=english?(minutes===60?'1 hour before':minutes<60?`${minutes} minutes before`:minutes===1440?'1 day before':`${minutes/60} hours before`):reminderLabel(minutes);
-    if(minutes>0)send(minutes,english?`DicoChien reminder · ${before}`:`Rappel DicoChien · ${before}`,english?`${event.title} is scheduled for ${clock}.`:`${event.title} est prévu à ${clock}.`);
-    send(0,english?'DicoChien appointment':'Rendez-vous DicoChien',english?`${event.title} is scheduled now, at ${clock}.`:`${event.title} est prévu maintenant, à ${clock}.`);
+    const results=[];
+    if(minutes>0)results.push(await send(minutes,english?`DicoChien reminder · ${before}`:`Rappel DicoChien · ${before}`,english?`${event.title} is scheduled for ${clock}.`:`${event.title} est prévu à ${clock}.`));
+    results.push(await send(0,english?'DicoChien appointment':'Rendez-vous DicoChien',english?`${event.title} is scheduled now, at ${clock}.`:`${event.title} est prévu maintenant, à ${clock}.`));
+    return results;
   }
   function clearReminders(id){reminderIds(id).forEach(reminderId=>window.DicoPetsNotifications?.remove(reminderId))}
   async function loadEvents(){
@@ -24,7 +26,7 @@
     $('calEvents').innerHTML='<p class="empty">Chargement de tes événements…</p>';
     const today=localDate(),{data,error}=await db.from('dog_calendar_events').select('*').eq('user_id',user.id).gte('event_date',today).order('event_date',{ascending:true}).order('event_time',{ascending:true,nullsFirst:false});
     if(error){$('calEvents').innerHTML='<p class="empty">Impossible de charger les événements. Vérifie ta connexion, puis recharge la page.</p>';return}
-    const upcoming=data||[];upcoming.forEach(scheduleEvent);
+    const upcoming=data||[];upcoming.forEach(event=>scheduleEvent(event,{remote:false}));
     if(!upcoming.length){$('calEvents').innerHTML='<p class="empty">Aucun événement à venir.</p>';return}
     $('calEvents').innerHTML=upcoming.map(event=>{const date=new Date(event.event_date+'T12:00:00').toLocaleDateString('fr-CA',{day:'2-digit',month:'short'}),time=event.event_time?event.event_time.slice(0,5):'',details=noteData(event);return `<article class="event-card"><div class="event-date">${safe(date)}</div><div><h3>${safe(event.title)}</h3><p>${safe(event.event_type)}${time?' · '+safe(time):''} · rappel ${reminderLabel(details.minutes)}</p>${details.notes?`<p>${safe(details.notes)}</p>`:''}</div><button class="event-delete" data-id="${safe(event.id)}">Supprimer</button></article>`}).join('');
     $('calEvents').querySelectorAll('.event-delete').forEach(button=>button.onclick=()=>deleteEvent(button.dataset.id));
@@ -42,7 +44,9 @@
     $('calSave').disabled=true;
     const {data,error}=await db.from('dog_calendar_events').insert({user_id:user.id,event_date:eventDate,event_time:eventTime,title,event_type:$('calType').value,notes}).select().single();
     $('calSave').disabled=false;if(error)return status('Impossible d’enregistrer. Vérifie que le calendrier est activé dans Supabase.');
-    scheduleEvent(data);$('calTitle').value='';$('calTime').value='';$('calNotes').value='';$('calReminder').value='60';$('calReminderLanguage').value=document.documentElement.lang.toLowerCase().startsWith('en')?'en':'fr';status('Événement ajouté : le rappel est programmé à l’heure choisie.',true);loadEvents();
+    const reminderResults=await scheduleEvent(data);$('calTitle').value='';$('calTime').value='';$('calNotes').value='';$('calReminder').value='60';$('calReminderLanguage').value=document.documentElement.lang.toLowerCase().startsWith('en')?'en':'fr';
+    const remoteFailed=reminderResults?.some(result=>result && !result.saved && result.reason!=='login');
+    status(remoteFailed?'Événement ajouté, mais le rappel distant n’a pas été enregistré. Active les notifications et vérifie Supabase.':'Événement ajouté : le rappel est programmé à l’heure choisie.',!remoteFailed);loadEvents();
   }
   $('calDate').value=localDate();$('calReminderLanguage').value=document.documentElement.lang.toLowerCase().startsWith('en')?'en':'fr';$('calSave').onclick=saveEvent;
   if($('enableNotifications'))$('enableNotifications').onclick=async()=>{const result=await window.DicoPetsNotifications?.enable();$('notificationStatus').textContent=result?.message||'Impossible d’activer les notifications.'};
