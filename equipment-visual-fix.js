@@ -13,7 +13,7 @@
   document.head.appendChild(style);
   const classic = document.querySelector('#eq-cheval .equip-card:first-child img');
   if(classic){
-    classic.src='assets/equip-cheval-classique.png';
+    classic.src='assets/equip-cheval-classique-user.png';
     classic.alt='Cheval entier équipé en équitation classique';
   }
 })();
